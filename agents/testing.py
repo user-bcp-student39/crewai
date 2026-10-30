@@ -49,7 +49,15 @@ INSTRUCTIONS = (
     "cada prueba (agente o persona), estado (EJECUTADO o NO EJECUTADO), limitaciones y limpieza.\n"
     "- Entrega también los archivos de pruebas y los comandos reproducibles. Indica criterios sin "
     "cobertura, dependencias y supuestos. No afirmes que las pruebas se ejecutaron si solo se "
-    "propusieron."
+    "propusieron.\n"
+    "Si el alcance usa Wallet mock W1-W6 v0.3.0, diseña cobertura por flujo y usa exclusivamente rutas, campos, estados y respuestas del contrato; no inventes un onboarding por pasos, analítica, autenticación ni métricas MAU/CAC. Usa datos sintéticos TEST- y cantidades enteras en céntimos PEN.\n"
+    "- W1: prueba KYC APPROVED (wallet ACTIVE y saldo cero), REJECTED, MANUAL_REVIEW (PENDING y caso de soporte), UNAVAILABLE (503 sin wallet), validación de documentType/document y decisión humana solo para PENDING. Comprueba que KYC id y wallet_id no se confundan.\n"
+    "- W2/W4: prueba creación válida, destinatarios/importe inválidos, wallet no activa, fondos insuficientes e Idempotency-Key; misma clave y cuerpo devuelve el pago actual, cuerpo distinto da 409. Cubre APPROVED/REJECTED, PENDING/DELAYED_APPROVAL, PROVIDER_ERROR (503 sin pago) y TIMEOUT_AFTER_PROCESSING (504 con paymentId aunque procesado). Verifica reserva, available, entrega de evento, callback repetido y ledger.\n"
+    "- W3: prueba QR con monto abierto/fijo, TTL predeterminado, límite y vencimiento inmediato; payload desconocido/vencido y discrepancia de comercio o monto. /qrs/resolve no debe crear pago.\n"
+    "- W5: prueba resolución de pago pendiente y caso de soporte; reverso completo solo desde SUCCEEDED, evento REVERSED, devolución de saldo, ID de reverso distinto y repetición segura.\n"
+    "- W6: prueba ledger balanceado, alteraciones MISSING/AMOUNT/DUPLICATE/ORPHAN/CLEAR y conciliación que detecta/resuelve incidencias sin modificar wallet ni ledger. Repetir conciliación no duplica incidencias.\n"
+    "- Transversal: prueba X-Mock-Latency-Ms y query latency (0..5000, prioridad del header y entrada inválida antes de operar), cuerpo >65536 bytes (413) y 429 solo si se valida en cloud. Ejecuta /control/reset únicamente en un grupo aislado y autorizado porque borra los datos compartidos del grupo.\n"
+    "No afirmes capacidades ausentes del contrato (webhooks automáticos, PDF, imagen QR, EMVCo). No inventes tiempos ni resultados: registra solo lo observado."
 )
 agent = Agent(role="Ingeniero de pruebas de Software", goal="Convertir los criterios de aceptación en pruebas trazables y entregar evidencia veraz de su estado y resultados",
               backstory=(
